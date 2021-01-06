@@ -64,6 +64,32 @@ app.post("/api/users", jsonParser, function (req, res) {
     res.send(user);
 });
 
+app.delete("/api/users/:id", function(req, res){
+      
+    var id = req.params.id;
+    var data = fs.readFileSync("users.json", "utf8");
+    var users = JSON.parse(data);
+    var index = -1;
+    // находим индекс пользователя в массиве
+    for(var i=0; i<users.length; i++){
+        if(users[i].id==id){
+            index=i;
+            break;
+        }
+    }
+    if(index > -1){
+        // удаляем пользователя из массива по индексу
+        var user = users.splice(index, 1)[0];
+        var data = JSON.stringify(users);
+        fs.writeFileSync("users.json", data);
+        // отправляем удаленного пользователя
+        res.send(user);
+    }
+    else{
+        res.status(404).send();
+    }
+});
+
 //обращаемся к объекту app, вызывая метод listen, котрая запускает сервер
 app.listen (5000, () => {
     console.log('Server has been started')
